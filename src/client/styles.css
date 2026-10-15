@@ -1,0 +1,233 @@
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --accent-soft: #dbeafe;
+  --danger: #dc2626;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    --accent-soft: #1e3a8a;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --border: #334155;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #60a5fa;
+  --accent-soft: #1e3a8a;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', 'Meiryo', system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  height: 100dvh;
+}
+
+/* ---- Toolbar ---------------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar button,
+.toolbar select,
+.toolbar label {
+  font: inherit;
+  color: inherit;
+}
+
+.toolbar button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.toolbar button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.toolbar button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.toolbar button.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.toolbar select {
+  min-height: 36px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.swatch {
+  width: 28px;
+  min-width: 28px;
+  min-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: var(--swatch);
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+#color-input {
+  width: 36px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.status[data-status='online'] {
+  color: #16a34a;
+}
+
+.status[data-status='offline'] {
+  color: var(--danger);
+}
+
+.share-message {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ---- Board ------------------------------------------------------------ */
+
+#stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+#board {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Stops the browser from scrolling or zooming while drawing with a finger or pen. */
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.text-editor {
+  position: absolute;
+  z-index: 1;
+  min-width: 140px;
+  max-width: calc(100% - 16px);
+  padding: 2px 4px;
+  margin: 0;
+  border: 1px dashed var(--accent);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.85);
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  -webkit-user-select: text;
+  user-select: text;
+  field-sizing: content;
+}
+
+/* ---- Phones and small tablets ----------------------------------------- */
+
+@media (max-width: 720px) {
+  .toolbar {
+    padding: 6px 8px;
+    gap: 6px 8px;
+    font-size: 13px;
+  }
+
+  .toolbar button {
+    min-height: 40px;
+    padding: 0 10px;
+  }
+
+  .swatch {
+    width: 30px;
+    min-width: 30px;
+    min-height: 30px !important;
+  }
+
+  .group label {
+    font-size: 13px;
+  }
+}
