@@ -1,0 +1,31 @@
+{
+  "name": "whiteboard",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n server,vite \"tsx watch --env-file=.env src/server/main.ts\" \"vite\"",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "start": "NODE_ENV=production tsx --env-file=.env src/server/main.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "tsx": "^4.23.15",
+    "ws": "^8.22.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "@types/ws": "^8.18.2",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "jsdom": "^29.1.1",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.4"
+  }
+}
