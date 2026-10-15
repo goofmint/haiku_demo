@@ -1,0 +1,355 @@
+:root {
+  --tb-bg: rgba(255, 255, 255, 0.96);
+  --tb-border: #e5e7eb;
+  --tb-fg: #1f2937;
+  --tb-muted: #6b7280;
+  --tb-active-bg: #dbeafe;
+  --tb-active-fg: #1d4ed8;
+  --tb-button-size: 40px;
+  --tb-gap: 4px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --status-ok: #16a34a;
+  --status-wait: #f59e0b;
+  --editor-outline: rgba(37, 99, 235, 0.6);
+  font-family: system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  color: var(--tb-fg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #ffffff;
+}
+
+body {
+  /* ページ自体のスクロール・ピンチズーム・長押しメニューを抑止する(NFR-4) */
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.board-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #ffffff;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: crosshair;
+}
+
+.board-canvas[data-tool="select"] {
+  cursor: default;
+}
+
+.board-canvas[data-tool="text"] {
+  cursor: text;
+}
+
+.board-canvas[data-tool="pan"],
+.board-canvas.is-space-pan {
+  cursor: grab;
+}
+
+/* テキスト入力欄(キャンバス上に重ねる) */
+.text-editor {
+  position: absolute;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: 1px dashed var(--editor-outline);
+  outline-offset: 2px;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  white-space: pre;
+  overflow-wrap: normal;
+  box-sizing: content-box;
+  transform-origin: 0 0;
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: auto;
+}
+
+/* ツールバー: PC は上部 */
+.toolbar {
+  position: absolute;
+  z-index: 10;
+  top: calc(var(--safe-top) + 8px);
+  left: calc(var(--safe-left) + 8px);
+  right: calc(var(--safe-right) + 8px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--tb-bg);
+  border: 1px solid var(--tb-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.tb-group {
+  display: flex;
+  align-items: center;
+  gap: var(--tb-gap);
+  flex: 0 0 auto;
+}
+
+.tb-group + .tb-group {
+  padding-left: 8px;
+  border-left: 1px solid var(--tb-border);
+}
+
+.tb-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tb-button-size);
+  min-height: var(--tb-button-size);
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--tb-fg);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tb-button:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.tb-button.is-active {
+  background: var(--tb-active-bg);
+  color: var(--tb-active-fg);
+}
+
+.tb-button:disabled {
+  color: #d1d5db;
+  cursor: default;
+}
+
+.tb-button:focus-visible,
+.tb-select:focus-visible,
+.tb-range:focus-visible,
+.tb-color:focus-visible {
+  outline: 2px solid var(--tb-active-fg);
+  outline-offset: 1px;
+}
+
+.tb-swatch {
+  min-width: var(--tb-button-size);
+}
+
+.tb-swatch::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.tb-swatch.is-active::before {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px var(--tb-active-fg);
+}
+
+.tb-color {
+  width: var(--tb-button-size);
+  height: var(--tb-button-size);
+  padding: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.tb-range {
+  width: 110px;
+  height: var(--tb-button-size);
+  margin: 0;
+  touch-action: pan-x;
+}
+
+.tb-value {
+  min-width: 2ch;
+  font-size: 13px;
+  color: var(--tb-muted);
+  text-align: right;
+}
+
+.tb-select {
+  height: var(--tb-button-size);
+  padding: 0 6px;
+  border: 1px solid var(--tb-border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--tb-fg);
+  /* iOS の自動ズームを避ける */
+  font-size: 16px;
+}
+
+.tb-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--tb-muted);
+  white-space: nowrap;
+}
+
+.tb-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-wait);
+}
+
+.tb-status[data-state="connected"] .tb-status-dot {
+  background: var(--status-ok);
+}
+
+.tb-participants {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tb-participants svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 幅 768px 未満: 下部に配置して横スクロール */
+@media (max-width: 767px) {
+  .toolbar {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px calc(var(--safe-right) + 8px) calc(var(--safe-bottom) + 4px)
+      calc(var(--safe-left) + 8px);
+    border-radius: 0;
+    border-width: 1px 0 0;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    scrollbar-width: none;
+  }
+
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tb-status {
+    margin-left: 0;
+  }
+}
+
+/* 接続状態バナー */
+.banner {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: calc(var(--safe-top) + 72px);
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.banner[hidden] {
+  display: none;
+}
+
+/* トースト */
+.toast {
+  position: absolute;
+  z-index: 30;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 24px);
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.9);
+  color: #ffffff;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.toast.is-visible {
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .banner {
+    top: calc(var(--safe-top) + 12px);
+  }
+
+  .toast {
+    bottom: calc(var(--safe-bottom) + 72px);
+  }
+}
+
+/* ルーム ID 不正などのエラー画面 */
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.error-screen h1 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.error-screen p {
+  margin: 0;
+  color: var(--tb-muted);
+  line-height: 1.6;
+}
